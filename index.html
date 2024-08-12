@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Web App Counter</title>
-    <!-- Comment out the Telegram script for local testing -->
-    <!-- <script src="https://telegram.org/js/telegram-web-app.js"></script> -->
+    <title>Telegram Web App with Storage</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,14 +16,15 @@
             margin: 0;
             background-color: #f0f2f5;
         }
-        #counter {
-            font-size: 48px;
+        #data-display {
+            font-size: 18px;
             margin: 20px 0;
+            text-align: center;
         }
         button {
-            font-size: 24px;
+            font-size: 18px;
             padding: 10px 20px;
-            margin: 0 10px;
+            margin: 10px;
             cursor: pointer;
             background-color: #0088cc;
             color: white;
@@ -34,45 +34,59 @@
     </style>
 </head>
 <body>
-    <div id="counter">0</div>
-    <div>
-        <button onclick="decrement()">-</button>
-        <button onclick="increment()">+</button>
-    </div>
+    <div id="data-display">No data stored yet.</div>
+    <button onclick="generateAndStoreData()">Generate and Store Data</button>
 
     <script>
-        let count = 0;
-        const counterElement = document.getElementById('counter');
+        const DATA_KEY = 'user_data';
 
-        function updateCounter() {
-            counterElement.textContent = count;
-            // Comment out Telegram-specific code for local testing
-            /*
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.MainButton.setText(`Count: ${count}`);
-            }
-            */
+        function generateData() {
+            const randomString = Math.random().toString(36).substring(2, 15);
+            return JSON.stringify({ randomString, timestamp: new Date().toISOString() });
         }
 
-        function increment() {
-            count++;
-            updateCounter();
+        function generateAndStoreData() {
+            const data = generateData();
+            Telegram.WebApp.CloudStorage.setItem(DATA_KEY, data)
+                .then(() => {
+                    console.log('Data stored successfully');
+                    displayData(data);
+                })
+                .catch(error => {
+                    console.error('Error storing data:', error);
+                    alert('Failed to store data. Please try again.');
+                });
         }
 
-        function decrement() {
-            count--;
-            updateCounter();
+        function retrieveAndDisplayData() {
+            Telegram.WebApp.CloudStorage.getItem(DATA_KEY)
+                .then(data => {
+                    if (data) {
+                        displayData(data);
+                    } else {
+                        console.log('No data found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error retrieving data:', error);
+                    alert('Failed to retrieve data. Please try again.');
+                });
         }
 
-        // Comment out Telegram initialization for local testing
-        /*
+        function displayData(dataString) {
+            const data = JSON.parse(dataString);
+            document.getElementById('data-display').innerHTML = `
+                Stored Data:<br>
+                Random String: ${data.randomString}<br>
+                Timestamp: ${data.timestamp}
+            `;
+        }
+
+        // Initialize the app
         if (window.Telegram && window.Telegram.WebApp) {
-            const webApp = window.Telegram.WebApp;
-            webApp.ready();
-            webApp.MainButton.setText('Count: 0');
-            webApp.MainButton.show();
+            Telegram.WebApp.ready();
+            retrieveAndDisplayData();
         }
-        */
     </script>
 </body>
 </html>
