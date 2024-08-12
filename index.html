@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Web App Counter</title>
+    <!-- Comment out the Telegram script for local testing -->
+    <!-- <script src="https://telegram.org/js/telegram-web-app.js"></script> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        #counter {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        button {
+            font-size: 24px;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="counter">0</div>
+    <div>
+        <button onclick="decrement()">-</button>
+        <button onclick="increment()">+</button>
+    </div>
+
+    <script>
+        let count = 0;
+        const counterElement = document.getElementById('counter');
+
+        function updateCounter() {
+            counterElement.textContent = count;
+            // Comment out Telegram-specific code for local testing
+            /*
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.MainButton.setText(`Count: ${count}`);
+            }
+            */
+        }
+
+        function increment() {
+            count++;
+            updateCounter();
+        }
+
+        function decrement() {
+            count--;
+            updateCounter();
+        }
+
+        // Comment out Telegram initialization for local testing
+        /*
+        if (window.Telegram && window.Telegram.WebApp) {
+            const webApp = window.Telegram.WebApp;
+            webApp.ready();
+            webApp.MainButton.setText('Count: 0');
+            webApp.MainButton.show();
+        }
+        */
+    </script>
+</body>
+</html>
